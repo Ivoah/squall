@@ -1,10 +1,10 @@
 package net.ivoah.squall
 
 import java.sql.*
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime}
 import scala.util.Using
 
-type QueryParam = Int | Double | String | Boolean | scala.Array[Byte] | LocalDate | DbEnum
+type QueryParam = Int | Double | String | Boolean | scala.Array[Byte] | LocalDate | LocalDateTime | DbEnum
 
 class Connector(url: String, credentials: Option[(String, String)] = None) {
   def this(url: String, credentials: (String, String)) = this(url, Some(credentials))
@@ -39,6 +39,7 @@ case class Query(sql: String, params: Seq[QueryParam]) {
       case str: String              => stmt.setString(i + 1, str)
       case bool: Boolean            => stmt.setBoolean(i + 1, bool)
       case date: LocalDate          => stmt.setDate(i + 1, java.sql.Date.valueOf(date))
+      case datetime: LocalDateTime  => stmt.setTimestamp(i + 1, java.sql.Timestamp.valueOf(datetime))
       case _enum: DbEnum            => stmt.setString(i + 1, _enum.toString)
       case bytes: scala.Array[Byte] => stmt.setBytes(i + 1, bytes)
     }
